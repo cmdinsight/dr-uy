@@ -32,7 +32,7 @@ export default async function AlgoritmoDetalle({
           <h1 className="text-xl font-bold text-navy mt-1">{a.titulo}</h1>
           <p className="text-sm text-slatey mt-1">{a.resumen}</p>
         </div>
-        <BotonFavorito tipo="ALGORITMO" ref={a.id} inicial={a.favorito} />
+        <BotonFavorito tipo="ALGORITMO" refId={a.id} inicial={a.favorito} />
       </div>
 
       <div className="flex gap-2">

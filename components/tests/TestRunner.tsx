@@ -78,8 +78,14 @@ export function TestRunner({
               <span className="text-base text-slatey font-semibold"> / {resultado.maximo}</span>
             </p>
           </div>
-          <span className={`nivel-badge nivel-${resultado.nivel}`}>
-            {NIVEL_LABEL[resultado.nivel] ?? resultado.nivel}
+          <span
+            className={`nivel-badge ${
+              resultado.completo ? `nivel-${resultado.nivel}` : "nivel-INFO"
+            }`}
+          >
+            {resultado.completo
+              ? (NIVEL_LABEL[resultado.nivel] ?? resultado.nivel)
+              : "Incompleto"}
           </span>
         </div>
         <div className="mt-2 h-1.5 rounded-full bg-mist overflow-hidden">
@@ -90,13 +96,16 @@ export function TestRunner({
             }}
           />
         </div>
-        <p className="mt-2 font-semibold text-ink text-sm">{resultado.titulo}</p>
-        {resultado.detalle && (
-          <p className="text-sm text-slatey mt-1">{resultado.detalle}</p>
-        )}
-        {!resultado.completo && (
+        {resultado.completo ? (
+          <>
+            <p className="mt-2 font-semibold text-ink text-sm">{resultado.titulo}</p>
+            {resultado.detalle && (
+              <p className="text-sm text-slatey mt-1">{resultado.detalle}</p>
+            )}
+          </>
+        ) : (
           <p className="text-xs text-slatey mt-2">
-            Faltan ítems por responder — el puntaje es parcial.
+            Respondé todos los ítems para ver la interpretación (puntaje parcial).
           </p>
         )}
       </div>
@@ -176,7 +185,7 @@ export function TestRunner({
           <button
             onClick={guardar}
             className="btn btn-primary flex-1"
-            disabled={guardando}
+            disabled={guardando || !resultado.completo}
           >
             {guardado ? "Guardado ✓" : guardando ? "Guardando…" : "Guardar en historial"}
           </button>

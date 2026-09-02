@@ -87,7 +87,7 @@ function Grupo({ titulo, items }: { titulo: string; items: TestListado[] }) {
       <div className="space-y-2">
         {items.map((t) => (
           <div key={t.id} className="card-flat p-3 flex items-start gap-3">
-            <BotonFavorito tipo="TEST" ref={t.id} inicial={t.favorito} className="mt-0.5" />
+            <BotonFavorito tipo="TEST" refId={t.id} inicial={t.favorito} className="mt-0.5" />
             <Link href={`/app/tests/${t.slug}`} className="flex-1 min-w-0">
               <p className="font-semibold text-ink text-sm flex items-center gap-2">
                 {t.nombre}

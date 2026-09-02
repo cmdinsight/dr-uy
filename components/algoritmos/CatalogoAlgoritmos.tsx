@@ -49,7 +49,7 @@ export function CatalogoAlgoritmos({ algos }: { algos: AlgoritmoListado[] }) {
       <div className="space-y-2">
         {filtrados.map((a) => (
           <div key={a.id} className="card-flat p-3 flex items-start gap-3">
-            <BotonFavorito tipo="ALGORITMO" ref={a.id} inicial={a.favorito} className="mt-0.5" />
+            <BotonFavorito tipo="ALGORITMO" refId={a.id} inicial={a.favorito} className="mt-0.5" />
             <Link href={`/app/algoritmos/${a.slug}`} className="flex-1 min-w-0">
               <p className="font-semibold text-ink text-sm flex items-center gap-2">
                 {a.titulo}

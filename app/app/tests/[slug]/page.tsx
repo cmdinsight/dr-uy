@@ -35,7 +35,7 @@ export default async function TestDetalle({
           <h1 className="text-xl font-bold text-navy mt-1">{t.def.nombre}</h1>
           <p className="text-sm text-slatey mt-1">{t.def.resumen}</p>
         </div>
-        <BotonFavorito tipo="TEST" ref={t.id} inicial={t.favorito} />
+        <BotonFavorito tipo="TEST" refId={t.id} inicial={t.favorito} />
       </div>
 
       <TestRunner testId={t.id} def={t.def} />

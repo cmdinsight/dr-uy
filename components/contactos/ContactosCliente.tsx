@@ -122,7 +122,7 @@ export function ContactosCliente({ contactos }: { contactos: ContactoEfectivo[] 
             {items.map((c) => (
               <div key={c.key} className="card-flat p-3">
                 <div className="flex items-start gap-2">
-                  <BotonFavorito tipo="CONTACTO" ref={c.key} inicial={c.favorito} className="mt-0.5" />
+                  <BotonFavorito tipo="CONTACTO" refId={c.key} inicial={c.favorito} className="mt-0.5" />
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-ink text-sm">{c.nombre}</p>
                     {c.descripcion && (

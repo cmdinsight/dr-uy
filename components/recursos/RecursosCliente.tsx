@@ -91,7 +91,7 @@ export function RecursosCliente({ recursos }: { recursos: RecursoListado[] }) {
           <div className="space-y-2">
             {items.map((r) => (
               <div key={r.id} className="card-flat p-3 flex items-start gap-3">
-                <BotonFavorito tipo="RECURSO" ref={r.id} inicial={r.favorito} className="mt-0.5" />
+                <BotonFavorito tipo="RECURSO" refId={r.id} inicial={r.favorito} className="mt-0.5" />
                 <div className="flex-1 min-w-0">
                   <a href={r.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-navy text-sm">
                     {r.titulo} ↗
