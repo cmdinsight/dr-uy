@@ -16,3 +16,9 @@ export const DESCARGO_PUNTOS: string[] = [
 
 export const DESCARGO_ACEPTACION =
   "Entiendo y acepto que DR.UY — Caja de Herramientas es una herramienta de apoyo, que no reemplaza mi criterio profesional, y que soy responsable de verificar la información antes de aplicarla.";
+
+// Atribución de desarrollo (marca, no operador legal — DR.UY no procesa pagos).
+export const DESARROLLADA_POR = "CMD Tech";
+export const DESARROLLADA_POR_LARGO =
+  "CMD Tech — unidad tecnológica de Integra Medical Group";
+export const CMD_TECH_URL = "https://cmdtech.uy";

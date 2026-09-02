@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { Marca } from "@/components/Logo";
-import { DESCARGO_CORTO } from "@/lib/descargo";
+import {
+  DESCARGO_CORTO,
+  DESARROLLADA_POR_LARGO,
+  CMD_TECH_URL,
+} from "@/lib/descargo";
 
 export default function SiteLayout({
   children,
@@ -28,15 +32,29 @@ export default function SiteLayout({
       <main className="flex-1">{children}</main>
 
       <footer className="border-t border-line bg-white">
-        <div className="wrap py-8 text-sm text-slatey space-y-3">
+        <div className="wrap py-10 text-sm text-slatey space-y-4">
           <Marca size={26} />
           <p className="max-w-content">{DESCARGO_CORTO}</p>
-          <p className="text-xs">
-            DR.UY — Caja de Herramientas · Uruguay ·{" "}
-            <Link href="/acceder" className="underline">
-              Ingresar
-            </Link>
-          </p>
+          <div className="border-t border-line pt-4 text-xs space-y-1.5">
+            <p>
+              DR.UY — Caja de Herramientas fue desarrollada por{" "}
+              <a
+                href={CMD_TECH_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-navy underline"
+              >
+                {DESARROLLADA_POR_LARGO}
+              </a>
+              .
+            </p>
+            <p>
+              Uruguay ·{" "}
+              <Link href="/acceder" className="underline">
+                Ingresar
+              </Link>
+            </p>
+          </div>
         </div>
       </footer>
     </div>

@@ -5,6 +5,7 @@ import { Marca } from "@/components/Logo";
 import { BottomNav } from "@/components/app/BottomNav";
 import { DescargoGate } from "@/components/app/DescargoGate";
 import { RegistrarSW } from "@/components/RegistrarSW";
+import { DESARROLLADA_POR_LARGO, CMD_TECH_URL } from "@/lib/descargo";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +53,19 @@ export default async function AppLayout({
       </header>
 
       <main className="mx-auto max-w-content px-4 py-4">{children}</main>
+
+      <footer className="mx-auto max-w-content px-4 pb-6 pt-2 text-center text-[11px] text-slatey">
+        Desarrollada por{" "}
+        <a
+          href={CMD_TECH_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          {DESARROLLADA_POR_LARGO}
+        </a>
+        . Herramienta de apoyo — no reemplaza el juicio clínico.
+      </footer>
 
       <BottomNav />
       {debeAceptar && <DescargoGate />}
