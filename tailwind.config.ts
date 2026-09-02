@@ -39,8 +39,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["Sora", "system-ui", "sans-serif"],
-        body: ["Inter", "system-ui", "sans-serif"],
+        display: ["system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
+        body: ["system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
       },
       boxShadow: {
         card: "0 1px 2px rgba(15,27,45,0.04), 0 8px 24px -12px rgba(15,27,45,0.12)",

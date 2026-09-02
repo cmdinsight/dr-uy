@@ -32,12 +32,12 @@ export async function contactosEfectivos(
   const ajustePorBase = new Map(ajustes.map((a) => [a.contactoBaseId, a]));
 
   const deBase: ContactoEfectivo[] = bases
-    .map((b) => {
+    .map((b): ContactoEfectivo | null => {
       const aj = ajustePorBase.get(b.id);
       if (aj?.oculto) return null;
       return {
         key: `base:${b.id}`,
-        origen: "base" as const,
+        origen: "base",
         id: b.id,
         categoria: b.categoria,
         nombre: b.nombre,

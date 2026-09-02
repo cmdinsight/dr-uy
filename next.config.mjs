@@ -1,11 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
-  // Red de seguridad para el primer deploy: este proyecto se escribió sin poder
-  // correr `tsc` localmente (no hay Node en la máquina). Una vez que
-  // `npm run build` pase limpio, poné esto en false para que los errores de
-  // tipos frenen el deploy.
-  typescript: { ignoreBuildErrors: true },
+  // `npm run build` y `tsc --noEmit` pasan limpios (verificado localmente con
+  // Node 24). Si algún cambio futuro rompe tipos, el build de Vercel lo frena.
+  typescript: { ignoreBuildErrors: false },
 };
 
 export default nextConfig;

@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { CONTENIDO_VERSION } from "@/lib/contenido";
 
+// Consulta la base en cada request: nunca se prerenderiza en el build.
+export const dynamic = "force-dynamic";
+
 // Payload público y cacheable (lo usa el service worker para la consulta con
 // mala señal). Solo contenido base de referencia, sin datos de usuarios.
 export async function GET() {
