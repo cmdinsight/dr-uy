@@ -1,0 +1,340 @@
+// Modelo de datos de DR.UY — Caja de Herramientas.
+//
+// Dos capas de contenido:
+//  - BASE: curado por el equipo DR.UY, versionado, se siembra desde lib/**/seed.
+//    El usuario lo ve, lo marca como favorito, y puede ocultarlo o ajustarlo,
+//    nunca romperlo.
+//  - USUARIO: creado por cada profesional, privado (usuarioId != null).
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ─────────────────────────── enums ───────────────────────────
+
+enum RolUsuario {
+  PROFESIONAL
+  ADMIN
+}
+
+enum CategoriaContacto {
+  EMERGENCIA_MOVIL
+  HEMODINAMIA
+  LABORATORIO
+  TOXICOLOGIA
+  HEMOTERAPIA
+  IMAGENOLOGIA
+  SALUD_MENTAL
+  VIOLENCIA
+  ESPECIALISTAS
+  COLEGAS
+  OTROS
+}
+
+enum CategoriaTest {
+  EMERGENCIA
+  CARDIOVASCULAR
+  RESPIRATORIO
+  NEUROLOGIA
+  GERIATRIA
+  INFECCIOSO
+  TRAUMA
+  DOLOR
+  OTROS
+}
+
+enum TipoItemTest {
+  UNICA
+  MULTIPLE
+  NUMERICO
+}
+
+enum ModoCalculo {
+  SUMA
+  REGLA_CUALQUIERA_POSITIVO
+}
+
+enum NivelInterpretacion {
+  INFO
+  LEVE
+  MODERADO
+  GRAVE
+}
+
+enum CategoriaAlgoritmo {
+  REANIMACION
+  VIA_AEREA
+  CARDIOVASCULAR
+  NEUROLOGIA
+  RESPIRATORIO
+  METABOLICO
+  TRAUMA
+  TOXICOLOGIA
+  MISCELANEAS
+}
+
+enum CategoriaRecurso {
+  GUIAS
+  CALCULADORAS
+  FORMACION
+  VADEMECUM
+  SOCIEDADES
+  OTROS
+}
+
+// ─────────────────────────── usuario ───────────────────────────
+
+model Usuario {
+  id                String     @id @default(cuid())
+  email             String     @unique
+  passwordHash      String
+  nombre            String
+  rol               RolUsuario @default(PROFESIONAL)
+  especialidad      String?
+  institucion       String?
+  region            String?
+  emailVerificadoEn DateTime?
+  verifToken        String?
+  aceptoDescargoEn  DateTime?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  contactos          Contacto[]
+  contactoAjustes    ContactoBaseAjuste[]
+  tests              TestClinico[]
+  testFavoritos      TestFavorito[]
+  registros          RegistroTest[]
+  algoritmos         Algoritmo[]
+  algoritmoFavoritos AlgoritmoFavorito[]
+  recursos           Recurso[]
+  recursoFavoritos   RecursoFavorito[]
+  imagenes           Imagen[]
+}
+
+// Versión del contenido base. La home muestra la fecha de la última publicada.
+model ContenidoVersion {
+  id          String   @id @default(cuid())
+  etiqueta    String
+  notas       String?
+  publicadoEn DateTime @default(now())
+}
+
+// ─────────────────────── módulo 1 · contactos ───────────────────────
+
+model ContactoBase {
+  id          String            @id @default(cuid())
+  categoria   CategoriaContacto
+  nombre      String
+  telefono    String
+  descripcion String?
+  region      String?
+  orden       Int               @default(0)
+  activo      Boolean           @default(true)
+  slug        String            @unique
+
+  ajustes ContactoBaseAjuste[]
+}
+
+model Contacto {
+  id        String            @id @default(cuid())
+  usuario   Usuario           @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId String
+  categoria CategoriaContacto
+  nombre    String
+  telefono  String
+  notas     String?
+  favorito  Boolean           @default(false)
+  orden     Int               @default(0)
+  createdAt DateTime          @default(now())
+
+  @@index([usuarioId])
+}
+
+model ContactoBaseAjuste {
+  id             String       @id @default(cuid())
+  usuario        Usuario      @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId      String
+  contactoBase   ContactoBase @relation(fields: [contactoBaseId], references: [id], onDelete: Cascade)
+  contactoBaseId String
+  oculto         Boolean      @default(false)
+  telefonoCustom String?
+  favorito       Boolean      @default(false)
+
+  @@unique([usuarioId, contactoBaseId])
+}
+
+// ─────────────────────── módulo 2 · test clínicos ───────────────────────
+
+model TestClinico {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  nombre      String
+  categoria   CategoriaTest
+  resumen     String
+  referencia  String
+  poblacion   String?
+  modoCalculo ModoCalculo   @default(SUMA)
+  publicado   Boolean       @default(true)
+  esBase      Boolean       @default(false)
+  usuario     Usuario?      @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId   String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  items     TestItem[]
+  rangos    TestRango[]
+  favoritos TestFavorito[]
+  registros RegistroTest[]
+
+  @@index([usuarioId])
+}
+
+model TestItem {
+  id        String       @id @default(cuid())
+  test      TestClinico  @relation(fields: [testId], references: [id], onDelete: Cascade)
+  testId    String
+  clave     String
+  orden     Int
+  enunciado String
+  tipo      TipoItemTest @default(UNICA)
+  ayuda     String?
+  min       Int?
+  max       Int?
+  paso      Int?
+  sufijo    String?
+
+  opciones TestOpcion[]
+
+  @@unique([testId, clave])
+  @@index([testId])
+}
+
+model TestOpcion {
+  id       String   @id @default(cuid())
+  item     TestItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId   String
+  orden    Int
+  etiqueta String
+  valor    Int
+
+  @@index([itemId])
+}
+
+model TestRango {
+  id      String              @id @default(cuid())
+  test    TestClinico         @relation(fields: [testId], references: [id], onDelete: Cascade)
+  testId  String
+  min     Int
+  max     Int
+  nivel   NivelInterpretacion
+  titulo  String
+  detalle String
+
+  @@index([testId])
+}
+
+model TestFavorito {
+  id        String      @id @default(cuid())
+  usuario   Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId String
+  test      TestClinico @relation(fields: [testId], references: [id], onDelete: Cascade)
+  testId    String
+
+  @@unique([usuarioId, testId])
+}
+
+model RegistroTest {
+  id               String              @id @default(cuid())
+  usuario          Usuario             @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId        String
+  test             TestClinico         @relation(fields: [testId], references: [id], onDelete: Cascade)
+  testId           String
+  total            Int
+  respuestasJson   String
+  nivel            NivelInterpretacion
+  etiquetaResultado String
+  pacienteRef      String?
+  createdAt        DateTime            @default(now())
+
+  @@index([usuarioId, testId])
+}
+
+// ─────────────────────── módulo 3 · algoritmos ───────────────────────
+
+model Algoritmo {
+  id          String            @id @default(cuid())
+  slug        String            @unique
+  titulo      String
+  categoria   CategoriaAlgoritmo
+  resumen     String
+  contenidoMd String?
+  imagen      Imagen?           @relation(fields: [imagenId], references: [id], onDelete: SetNull)
+  imagenId    String?
+  fuente      String?
+  publicado   Boolean           @default(true)
+  esBase      Boolean           @default(false)
+  usuario     Usuario?          @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId   String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  favoritos AlgoritmoFavorito[]
+
+  @@index([usuarioId])
+}
+
+model Imagen {
+  id        String    @id @default(cuid())
+  mime      String
+  datos     Bytes
+  usuario   Usuario?  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId String?
+  createdAt DateTime  @default(now())
+
+  algoritmos Algoritmo[]
+}
+
+model AlgoritmoFavorito {
+  id          String    @id @default(cuid())
+  usuario     Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId   String
+  algoritmo   Algoritmo @relation(fields: [algoritmoId], references: [id], onDelete: Cascade)
+  algoritmoId String
+
+  @@unique([usuarioId, algoritmoId])
+}
+
+// ─────────────────────── módulo 4 · recursos ───────────────────────
+
+model Recurso {
+  id          String           @id @default(cuid())
+  slug        String?          @unique
+  titulo      String
+  url         String
+  categoria   CategoriaRecurso
+  descripcion String?
+  orden       Int              @default(0)
+  esBase      Boolean          @default(false)
+  usuario     Usuario?         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId   String?
+  createdAt   DateTime         @default(now())
+
+  favoritos RecursoFavorito[]
+
+  @@index([usuarioId])
+}
+
+model RecursoFavorito {
+  id        String  @id @default(cuid())
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId String
+  recurso   Recurso @relation(fields: [recursoId], references: [id], onDelete: Cascade)
+  recursoId String
+
+  @@unique([usuarioId, recursoId])
+}
